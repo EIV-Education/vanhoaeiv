@@ -263,7 +263,7 @@
     </div>
     <div class="card">
       <h2>🏆 Bảng xếp hạng</h2>
-      <p class="sub">Top nhận sao ⭐ và top chuỗi ngày check-in 🔥 toàn EIV.</p>
+      <p class="sub">Top chuỗi ngày check-in 🔥 toàn EIV.</p>
       <div id="leaderboard"><div class="lb-loading">Đang tải...</div></div>
     </div>
   </div>
@@ -315,6 +315,22 @@
     </div>
   </div>
 
+  <!-- ===== PAGE: DASHBOARD ===== -->
+  <div class="page" id="page-dashboard">
+    <div class="card">
+      <h2>📈 Dashboard chương trình</h2>
+      <p class="sub">Tổng quan hoạt động thực hành Sống Văn Hóa EIV toàn công ty.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n" id="dash-today-count">0</div><div class="l">người đã check-in hôm nay</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>🏆 Top nhận sao</h2>
+      <p class="sub">Những người được đồng đội ghi nhận nhiều nhất.</p>
+      <div id="dash-top-stars"><div class="lb-loading">Đang tải...</div></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ===== NAV ===== -->
@@ -325,6 +341,7 @@
     <button data-page="kudos" onclick="goPage('kudos',this)"><span class="ico">⭐</span>Ghi nhận<span class="nav-dot" id="kudos-dot" style="display:none"></span></button>
     <button data-page="flash" onclick="goPage('flash',this)"><span class="ico">🧠</span>Flashcard</button>
     <button data-page="progress" onclick="goPage('progress',this)"><span class="ico">📊</span>Tiến bộ</button>
+    <button data-page="dashboard" onclick="goPage('dashboard',this)"><span class="ico">📈</span>Dashboard</button>
   </div>
 </nav>
 
@@ -412,7 +429,7 @@ async function loadCommunity(force){
   try{
     const r=await fetch(SYNC_URL+'?action=data');
     const j=await r.json();
-    COMM={ts:Date.now(), people:j.people||[], kudos:j.kudos||[], stars:j.stars||{}, streaks:j.streaks||{}};
+    COMM={ts:Date.now(), people:j.people||[], kudos:j.kudos||[], stars:j.stars||{}, streaks:j.streaks||{}, today:j.today||{count:0}};
   }catch(e){}
   commLoading=false;
   return COMM;
@@ -459,16 +476,22 @@ async function renderCommunity(){
       <div class="k-date">${esc(k.date)}</div>
     </div>`).join('')
     : '<div class="lb-loading">Chưa có ngôi sao nào được tặng. Hãy là người đầu tiên!</div>';
-  // leaderboard
-  const topStars=Object.entries(c.stars).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  // leaderboard (chuỗi ngày check-in)
   const topStreaks=Object.entries(c.streaks).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const medal=i=>['🥇','🥈','🥉','4','5'][i]||'';
   lb.innerHTML=
-    '<p style="font-weight:bold;font-size:13.5px;color:var(--navy);margin-top:4px">⭐ Nhận nhiều sao nhất</p>'+
-    (topStars.length?topStars.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} ⭐</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>')+
-    '<p style="font-weight:bold;font-size:13.5px;color:var(--navy);margin-top:14px">🔥 Chuỗi ngày dài nhất</p>'+
     (topStreaks.length?topStreaks.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} 🔥</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>');
   renderBadges();
+}
+function medal(i){ return ['🥇','🥈','🥉','4','5'][i]||''; }
+async function renderDashboard(){
+  const c=await loadCommunity();
+  const starsEl=document.getElementById('dash-top-stars');
+  const countEl=document.getElementById('dash-today-count');
+  if(!c){ starsEl.innerHTML='<div class="lb-loading">Chưa kết nối được – thử lại sau nhé.</div>'; return; }
+  countEl.textContent=(c.today&&c.today.count)||0;
+  const esc=s=>String(s||'').replace(/</g,'&lt;');
+  const topStars=Object.entries(c.stars).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  starsEl.innerHTML=topStars.length?topStars.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} ⭐</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>';
 }
 function sendKudos(){
   const to=document.getElementById('kd-to').value.trim();
@@ -704,6 +727,7 @@ function goPage(p, btn){
   if(btn) btn.classList.add('active');
   window.scrollTo({top:0});
   if(p==='kudos') renderCommunity();
+  if(p==='dashboard') renderDashboard();
 }
 let toastTimer;
 function toast(msg){
