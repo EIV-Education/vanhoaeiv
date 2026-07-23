@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0B3D66">
+<title>Sống Văn Hóa EIV – Thực hành & Soi chiếu</title>
+<style>
+  :root{
+    --navy:#0B3D66; --blue:#1266A8; --blue-light:#E8F1F9;
+    --orange:#F5851F; --orange-light:#FEF0E0;
+    --green:#2E9E5B; --green-light:#E6F5EC;
+    --ink:#1F2937; --gray:#6B7280; --line:#E5E7EB; --bg:#F5F7FA; --white:#fff;
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:Arial,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5;padding-bottom:84px}
+  .container{max-width:520px;margin:0 auto;padding:0 16px}
+
+  /* Header */
+  header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:20px 0 16px;border-radius:0 0 24px 24px}
+  header .container{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .brand h1{font-size:19px;line-height:1.25}
+  .brand p{font-size:12.5px;opacity:.85;margin-top:2px}
+  .streak-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:8px 14px;text-align:center;min-width:74px}
+  .streak-badge .num{font-size:22px;font-weight:bold;color:#FFD37E}
+  .streak-badge .lbl{font-size:10.5px;opacity:.9}
+  .values-strip{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+  .values-strip span{font-size:11px;background:rgba(255,255,255,.14);padding:3px 10px;border-radius:99px}
+
+  /* Cards */
+  .card{background:var(--white);border-radius:var(--radius);padding:18px;margin-top:14px;box-shadow:0 1px 4px rgba(15,40,80,.07)}
+  .card h2{font-size:16.5px;color:var(--navy);margin-bottom:4px}
+  .card .sub{font-size:13px;color:var(--gray);margin-bottom:12px}
+
+  /* Behaviors */
+  .behavior{display:flex;align-items:flex-start;gap:12px;padding:12px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:.15s;background:#fff}
+  .behavior:active{transform:scale(.985)}
+  .behavior.done{border-color:var(--green);background:var(--green-light)}
+  .behavior .check{width:26px;height:26px;border-radius:50%;border:2px solid #C7CDD6;flex:0 0 26px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;margin-top:1px}
+  .behavior.done .check{background:var(--green);border-color:var(--green)}
+  .behavior .txt{font-size:14.5px}
+  .behavior .tag{display:inline-block;font-size:10.5px;font-weight:bold;letter-spacing:.3px;color:var(--blue);background:var(--blue-light);padding:2px 8px;border-radius:99px;margin-bottom:3px}
+  .behavior.focus-b{position:relative}
+  .behavior.focus-b .star{position:absolute;top:-8px;right:10px;background:var(--orange);color:#fff;font-size:10px;font-weight:bold;padding:2px 8px;border-radius:99px}
+  .today-count{font-size:13.5px;color:var(--gray);text-align:center;margin-top:8px}
+
+  /* Buttons */
+  .btn{display:block;width:100%;border:0;border-radius:12px;padding:14px;font-size:15.5px;font-weight:bold;font-family:inherit;cursor:pointer;transition:.15s}
+  .btn:active{transform:scale(.98)}
+  .btn-primary{background:var(--orange);color:#fff}
+  .btn-navy{background:var(--navy);color:#fff}
+  .btn-ghost{background:var(--blue-light);color:var(--navy)}
+  .btn+.btn{margin-top:10px}
+  .btn:disabled{opacity:.45}
+
+  /* Tabs */
+  nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:50}
+  nav .container{display:flex;padding:0}
+  nav button{flex:1;background:none;border:0;padding:9px 2px 10px;font-family:inherit;font-size:10.5px;color:var(--gray);cursor:pointer}
+  nav button .ico{display:block;font-size:21px;margin-bottom:2px;filter:grayscale(1);opacity:.55}
+  nav button.active{color:var(--navy);font-weight:bold}
+  nav button.active .ico{filter:none;opacity:1}
+  .page{display:none}
+  .page.active{display:block;animation:fade .25s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* Reflection form */
+  .q-label{font-size:13.5px;font-weight:bold;color:var(--navy);margin:14px 0 6px;display:block}
+  textarea,input[type=text],select{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px;font-family:inherit;font-size:14.5px;background:#fff;color:var(--ink)}
+  textarea{min-height:74px;resize:vertical}
+  textarea:focus,input:focus,select:focus{outline:none;border-color:var(--blue)}
+  .reflection-item{border-left:4px solid var(--orange);background:var(--orange-light);border-radius:0 12px 12px 0;padding:12px 14px;margin-top:10px}
+  .reflection-item .week{font-weight:bold;font-size:13.5px;color:var(--navy)}
+  .reflection-item .date{font-size:11.5px;color:var(--gray);margin-bottom:6px}
+  .reflection-item .body{font-size:13.5px;white-space:pre-wrap}
+  .reflection-item .actions{margin-top:8px;display:flex;gap:14px}
+  .reflection-item .actions a{font-size:12.5px;color:var(--blue);font-weight:bold;text-decoration:none;cursor:pointer}
+
+  /* Flashcard */
+  .flash{background:linear-gradient(150deg,var(--navy),var(--blue));color:#fff;border-radius:20px;padding:26px 22px;min-height:250px;display:flex;flex-direction:column;justify-content:center;text-align:center;margin-top:14px;box-shadow:0 6px 18px rgba(11,61,102,.25)}
+  .flash .kicker{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#FFD37E;font-weight:bold;margin-bottom:10px}
+  .flash h3{font-size:19px;line-height:1.35;margin-bottom:12px}
+  .flash p{font-size:14.5px;opacity:.92;line-height:1.55}
+  .flash .q{margin-top:16px;background:rgba(255,255,255,.12);border:1px dashed rgba(255,255,255,.4);border-radius:12px;padding:12px;font-size:14px;font-style:italic}
+  .flash-nav{display:flex;gap:10px;margin-top:12px}
+  .flash-nav .btn{margin:0}
+  .flash-count{text-align:center;font-size:12.5px;color:var(--gray);margin-top:8px}
+
+  /* Progress */
+  .grid30{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px}
+  .grid30 .cell{aspect-ratio:1;border-radius:8px;background:#EDF0F4;display:flex;align-items:center;justify-content:center;font-size:10px;color:#9AA3AF}
+  .grid30 .cell.l1{background:#BFDFC9;color:#256B43}
+  .grid30 .cell.l2{background:#6FC08D;color:#fff}
+  .grid30 .cell.l3{background:var(--green);color:#fff;font-weight:bold}
+  .grid30 .cell.today{outline:2.5px solid var(--orange);outline-offset:1px}
+  .legend{display:flex;gap:12px;font-size:11.5px;color:var(--gray);margin-top:10px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+  .bar-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .bar-row .b-label{flex:0 0 46%;font-size:12.5px}
+  .bar-row .b-track{flex:1;background:#EDF0F4;border-radius:99px;height:16px;overflow:hidden}
+  .bar-row .b-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--navy));border-radius:99px;min-width:2px;transition:width .5s}
+  .bar-row .b-num{flex:0 0 26px;font-size:12.5px;font-weight:bold;color:var(--navy);text-align:right}
+  .stat-row{display:flex;gap:10px;margin-top:14px}
+  .stat{flex:1;background:var(--blue-light);border-radius:12px;padding:12px 8px;text-align:center}
+  .stat .n{font-size:22px;font-weight:bold;color:var(--navy)}
+  .stat .l{font-size:11px;color:var(--gray);margin-top:2px}
+
+  /* Onboarding */
+  #onboarding{position:fixed;inset:0;background:linear-gradient(160deg,var(--navy),var(--blue));z-index:100;overflow-y:auto;color:#fff;padding:36px 0 40px}
+  #onboarding .card{background:#fff;color:var(--ink)}
+  #onboarding h1{font-size:24px;line-height:1.3}
+  #onboarding .lead{margin-top:10px;font-size:14.5px;opacity:.9;line-height:1.6}
+  .choose-b{border:2px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer;font-size:14px}
+  .choose-b.sel{border-color:var(--orange);background:var(--orange-light)}
+  .choose-b .tag{font-size:10.5px;font-weight:bold;color:var(--blue)}
+
+  .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;font-size:14px;z-index:200;opacity:0;pointer-events:none;transition:.3s;max-width:92%;text-align:center}
+  .toast.show{opacity:1}
+  .quote{margin-top:14px;text-align:center;font-size:13px;font-style:italic;color:var(--gray);padding:0 10px;line-height:1.6}
+  .banner-done{background:var(--green-light);border:1.5px solid var(--green);color:#1D6B40;border-radius:12px;padding:12px 14px;font-size:14px;margin-top:12px;display:none}
+  .settings-link{text-align:center;margin-top:18px}
+  .settings-link a{font-size:12.5px;color:var(--gray);text-decoration:underline;cursor:pointer}
+
+  /* Kudos */
+  .kudos-item{border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:10px;font-size:13.5px;background:#fff}
+  .kudos-item .k-head{font-weight:bold;color:var(--navy)}
+  .kudos-item .k-tag{display:inline-block;font-size:10.5px;font-weight:bold;color:var(--orange);background:var(--orange-light);padding:1px 8px;border-radius:99px;margin:3px 0}
+  .kudos-item .k-msg{font-style:italic;color:var(--ink)}
+  .kudos-item .k-date{font-size:11px;color:var(--gray);margin-top:3px}
+  .lb-row{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--line);font-size:14px}
+  .lb-row:last-child{border-bottom:0}
+  .lb-row .rank{width:26px;font-weight:bold;color:var(--navy);text-align:center}
+  .lb-row .lb-name{flex:1}
+  .lb-row .lb-score{font-weight:bold;color:var(--orange)}
+  .badge{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:12px;border:1.5px solid var(--line);margin-top:8px;font-size:13.5px}
+  .badge.earned{border-color:var(--orange);background:var(--orange-light)}
+  .badge .b-ico{font-size:22px;filter:grayscale(1);opacity:.4}
+  .badge.earned .b-ico{filter:none;opacity:1}
+  .badge .b-name{font-weight:bold;color:var(--navy)}
+  .badge .b-cond{font-size:11.5px;color:var(--gray)}
+  .lb-loading{font-size:13px;color:var(--gray);text-align:center;padding:10px}
+  nav button{position:relative}
+  .nav-dot{position:absolute;top:5px;right:20%;width:9px;height:9px;border-radius:50%;background:#E5484D;border:1.5px solid #fff}
+  .my-star-total{text-align:center;font-size:15px;color:var(--navy);background:var(--orange-light);border-radius:12px;padding:10px;margin-bottom:4px}
+  .my-star-total b{font-size:22px;color:var(--orange)}
+</style>
+</head>
+<body>
+
+<!-- ===== ONBOARDING ===== -->
+<div id="onboarding">
+  <div class="container">
+    <h1>SỐNG VĂN HÓA EIV</h1>
+    <p class="lead">Từ tư duy đến hành động.<br>Văn hóa không thay đổi sau một workshop – văn hóa thay đổi khi mỗi người thực hành mỗi ngày. Hành trình <b>30 ngày</b> của bạn bắt đầu từ đây!</p>
+    <p class="lead" style="font-size:12px;opacity:.75">ℹ️ Check-in và bài soi chiếu của bạn được tổng hợp về ban tổ chức chương trình để đồng hành và ghi nhận.</p>
+
+    <div class="card">
+      <h2>Bạn là ai?</h2>
+      <label class="q-label">Họ tên</label>
+      <input type="text" id="ob-name" placeholder="Ví dụ: Nguyễn Minh An">
+      <label class="q-label">Chi nhánh / Bộ phận</label>
+      <input type="text" id="ob-branch" placeholder="Ví dụ: EIV Hà Nội – Phòng Điều phối">
+    </div>
+
+    <div class="card">
+      <h2>Chọn 1 hành vi trọng tâm</h2>
+      <p class="sub">Bạn sẽ thực hành cả 5 hành vi, nhưng hãy chọn 1 hành vi để cam kết rèn luyện sâu nhất trong 30 ngày tới.</p>
+      <div id="ob-behaviors"></div>
+    </div>
+
+    <div class="card">
+      <h2>Cam kết của bạn</h2>
+      <p class="sub">Bắt đầu bằng "Tôi sẽ..." – cụ thể đến mức ngày mai làm được ngay.</p>
+      <textarea id="ob-commit" placeholder="Tôi sẽ..."></textarea>
+      <button class="btn btn-primary" style="margin-top:14px" onclick="finishOnboarding()">🚀 Bắt đầu hành trình 30 ngày</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="container">
+    <div class="brand">
+      <h1>Sống Văn Hóa EIV</h1>
+      <p id="hd-greeting">Chào bạn!</p>
+      <div class="values-strip"><span>Tiên Phong</span><span>Kết Nối</span><span>Chính Trực</span><span>Cam Kết</span></div>
+    </div>
+    <div class="streak-badge">
+      <div class="num" id="hd-streak">0</div>
+      <div class="lbl">ngày liên tiếp 🔥</div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ===== PAGE: TODAY ===== -->
+  <div class="page active" id="page-today">
+    <div class="card">
+      <h2>✅ Check-in hôm nay</h2>
+      <p class="sub" id="today-date"></p>
+      <div id="behavior-list"></div>
+      <div class="today-count" id="today-count"></div>
+      <div class="banner-done" id="banner-done">🎉 Tuyệt vời! Bạn đã thực hành hành vi trọng tâm hôm nay. Từng lựa chọn nhỏ đang xây nên văn hóa EIV!</div>
+    </div>
+    <div class="quote" id="daily-quote"></div>
+    <div class="settings-link"><a onclick="resetApp()">Cài đặt lại thông tin cá nhân</a></div>
+  </div>
+
+  <!-- ===== PAGE: REFLECTION ===== -->
+  <div class="page" id="page-reflect">
+    <div class="card">
+      <h2>🪞 Soi chiếu tuần này</h2>
+      <p class="sub">10 phút trung thực với chính mình – theo đúng cấu trúc soi chiếu của EIV. Chia sẻ lên nhóm Lark sáng thứ Hai hàng tuần.</p>
+
+      <label class="q-label">1. Hành vi tôi lựa chọn thực hành là:</label>
+      <select id="rf-behavior"></select>
+
+      <label class="q-label">2. Điều tôi đã làm tốt – và tạo ra kết quả gì?</label>
+      <textarea id="rf-good" placeholder="Tôi đã làm tốt điều gì khi thực hành hành vi này? Kết quả cụ thể?"></textarea>
+
+      <label class="q-label">3. Điều còn chưa tốt / thách thức là gì?</label>
+      <textarea id="rf-challenge" placeholder="Khó khăn khi thực hành hành vi này..."></textarea>
+
+      <label class="q-label">4. Điều tôi nhận ra / bài học là gì?</label>
+      <textarea id="rf-lesson" placeholder="Nhận ra điều gì về bản thân, về cách phối hợp..."></textarea>
+
+      <label class="q-label">5. Tuần tới, tôi sẽ làm gì khác đi?</label>
+      <textarea id="rf-next" placeholder="Hành động cụ thể để thực hành hiệu quả hơn..."></textarea>
+
+      <button class="btn btn-primary" style="margin-top:16px" onclick="saveReflection()">💾 Lưu soi chiếu tuần này</button>
+    </div>
+
+    <div class="card">
+      <h2>📖 Nhật ký soi chiếu</h2>
+      <p class="sub">Bấm "Chia sẻ" để sao chép nội dung và dán vào nhóm Lark/Zalo.</p>
+      <div id="reflection-list"><p style="font-size:13.5px;color:var(--gray)">Chưa có bài soi chiếu nào. Tuần đầu tiên của bạn bắt đầu từ hôm nay!</p></div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: KUDOS ===== -->
+  <div class="page" id="page-kudos">
+    <div class="card">
+      <h2>💌 Sao dành cho bạn</h2>
+      <div id="my-stars"><div class="lb-loading">Đang tải...</div></div>
+    </div>
+    <div class="card">
+      <h2>⭐ Tặng sao ghi nhận</h2>
+      <p class="sub">Ghi nhận cụ thể một hành vi bạn thấy đồng nghiệp làm tốt. Một lời ghi nhận đúng lúc đáng giá hơn ngàn lời khen chung chung!</p>
+      <label class="q-label">Tặng cho</label>
+      <input type="text" id="kd-to" list="kd-people" placeholder="Gõ tên đồng nghiệp...">
+      <datalist id="kd-people"></datalist>
+      <label class="q-label">Vì hành vi</label>
+      <select id="kd-behavior"></select>
+      <label class="q-label">Lời nhắn (điều cụ thể bạn quan sát thấy)</label>
+      <textarea id="kd-msg" placeholder="Ví dụ: Chị đã chủ động báo sớm sự cố lớp ABC cho Sales và khách hàng, giúp xử lý kịp thời..."></textarea>
+      <button class="btn btn-primary" style="margin-top:14px" onclick="sendKudos()">⭐ Tặng sao</button>
+    </div>
+    <div class="card">
+      <h2>🌟 Ghi nhận mới nhất</h2>
+      <div id="kudos-feed"><div class="lb-loading">Đang tải...</div></div>
+    </div>
+    <div class="card">
+      <h2>🏆 Bảng xếp hạng</h2>
+      <p class="sub">Top nhận sao ⭐ và top chuỗi ngày check-in 🔥 toàn EIV.</p>
+      <div id="leaderboard"><div class="lb-loading">Đang tải...</div></div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: FLASHCARD ===== -->
+  <div class="page" id="page-flash">
+    <div class="card" style="padding-bottom:8px">
+      <h2>🧠 Flashcard nhắc nhớ</h2>
+      <p class="sub">Não bộ quên 90% sau 1 tuần. Mỗi ngày 1 thẻ – giữ cho kiến thức workshop luôn sống.</p>
+    </div>
+    <div class="flash" id="flash-card"></div>
+    <div class="flash-nav">
+      <button class="btn btn-ghost" onclick="moveFlash(-1)">← Thẻ trước</button>
+      <button class="btn btn-navy" onclick="moveFlash(1)">Thẻ tiếp →</button>
+    </div>
+    <div class="flash-count" id="flash-count"></div>
+  </div>
+
+  <!-- ===== PAGE: PROGRESS ===== -->
+  <div class="page" id="page-progress">
+    <div class="card">
+      <h2>📊 Hành trình 30 ngày</h2>
+      <p class="sub" id="progress-sub"></p>
+      <div class="grid30" id="grid30"></div>
+      <div class="legend">
+        <span><i style="background:#EDF0F4"></i>Chưa check-in</span>
+        <span><i style="background:#BFDFC9"></i>1–2 hành vi</span>
+        <span><i style="background:#6FC08D"></i>3–4 hành vi</span>
+        <span><i style="background:var(--green)"></i>Cả 5 hành vi</span>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="n" id="st-days">0</div><div class="l">ngày đã thực hành</div></div>
+        <div class="stat"><div class="n" id="st-total">0</div><div class="l">lượt check-in</div></div>
+        <div class="stat"><div class="n" id="st-reflect">0</div><div class="l">bài soi chiếu</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Từng hành vi thế nào?</h2>
+      <p class="sub">Số ngày bạn đã thực hành mỗi hành vi.</p>
+      <div id="behavior-bars"></div>
+    </div>
+    <div class="card">
+      <h2>🏅 Huy hiệu của bạn</h2>
+      <div id="badges"></div>
+    </div>
+    <div class="card" style="background:var(--orange-light);border:1.5px solid var(--orange)">
+      <h2>⭐ Cam kết của bạn</h2>
+      <p id="my-commitment" style="font-size:14.5px;font-style:italic"></p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="container">
+    <button class="active" data-page="today" onclick="goPage('today',this)"><span class="ico">✅</span>Hôm nay</button>
+    <button data-page="reflect" onclick="goPage('reflect',this)"><span class="ico">🪞</span>Soi chiếu</button>
+    <button data-page="kudos" onclick="goPage('kudos',this)"><span class="ico">⭐</span>Ghi nhận<span class="nav-dot" id="kudos-dot" style="display:none"></span></button>
+    <button data-page="flash" onclick="goPage('flash',this)"><span class="ico">🧠</span>Flashcard</button>
+    <button data-page="progress" onclick="goPage('progress',this)"><span class="ico">📊</span>Tiến bộ</button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= DATA ================= */
+const BEHAVIORS = [
+  {id:'b1', value:'TIÊN PHONG',  text:'Chủ động đề xuất giải pháp mới trước khi được yêu cầu'},
+  {id:'b2', value:'KẾT NỐI',     text:'Trao đổi kịp thời, thẳng thắn và rõ ràng'},
+  {id:'b3', value:'KẾT NỐI',     text:'Lắng nghe chủ động, tôn trọng góc nhìn khác biệt'},
+  {id:'b4', value:'CHÍNH TRỰC',  text:'Chủ động thông báo sự cố sớm nhất cho các bên liên quan'},
+  {id:'b5', value:'CAM KẾT',     text:'Cam kết với tiến trình và các mục tiêu nhỏ đã đề ra'}
+];
+
+const FLASHCARDS = [
+  {k:'Tư duy phát triển', t:'"Tôi CHƯA giỏi việc này" thay vì "Tôi không giỏi việc này"', p:'Sai không phải là thất bại – sai là dữ liệu để học. Góp ý không phải bị chê – mà là được tặng thông tin. Năng lực là thứ RÈN được.', q:'Tuần này, bạn đã đón nhận góp ý nào như một "món quà thông tin"?'},
+  {k:'Khán giả vs. Cầu thủ', t:'Bạn đang ở trên khán đài hay dưới sân cỏ?', p:'Khán giả: quan sát, than phiền, chờ người khác thay đổi. Cầu thủ: hành động, đề xuất giải pháp, chọn mình là một phần của lời giải.', q:'Trong tình huống khó nhất tuần này, câu hỏi "Tôi có thể làm gì?" đã xuất hiện chưa?'},
+  {k:'Não bộ & thay đổi', t:'Não thích an toàn – đó là việc của nó. Vượt qua – đó là việc của bạn.', p:'Thói quen là đường mòn: càng lặp lại càng sâu. Mở đường mới ban đầu luôn tốn sức – nhưng mỗi lần thực hành, đường mới lại rõ hơn một chút.', q:'Hôm nay bạn đã "mở đường mới" bằng hành động nhỏ nào?'},
+  {k:'3 phản xạ tự vệ', t:'Đổ lỗi – Phòng thủ – Suy diễn', p:'3 phản xạ này cứu ta trước hiểm nguy – nhưng giết sự phối hợp trong công việc. Nhận diện được chúng là bước đầu để lựa chọn khác.', q:'Lần gần nhất bạn kịp dừng lại trước khi đổ lỗi hay suy diễn là khi nào?'},
+  {k:'Quy luật hiệu quả số 1', t:'Cách mọi người hành động tương quan với cách họ nhìn nhận tình huống', p:'Khi đồng đội làm không như kỳ vọng – đừng phán xét bề nổi. Hãy tìm hiểu họ đang nhìn nhận, lo lắng và tin điều gì.', q:'Tuần này, bạn đã hỏi "bạn đang nhìn nhận việc này thế nào?" với ai chưa?'},
+  {k:'Quy luật hiệu quả số 2', t:'Ngôn ngữ định hình cách nhìn nhận', p:'Lời ta nói ra – với người khác và với chính mình – tạo ra thực tại ta đang sống. Đổi ngôn ngữ là đổi góc nhìn.', q:'Có câu nói tiêu cực nào bạn muốn "viết lại" theo hướng xây dựng?'},
+  {k:'Tiên phong', t:'Tiên phong không phải là phát minh vĩ đại', p:'Tiên phong là mỗi ngày cải tiến tốt hơn hôm qua: Quan sát → Đặt câu hỏi → Thử → Học → Cải tiến. Bắt đầu từ chính việc mình đang làm.', q:'"Nếu làm lại từ đầu, mình sẽ làm khác thế nào?" – thử hỏi câu này với 1 việc quen thuộc hôm nay!'},
+  {k:'Kết nối', t:'Muốn kết nối, hãy bắt đầu từ: TÔI', p:'Tôi không kiểm soát được người khác làm gì. Tôi luôn kiểm soát được mình bước trước hay đứng chờ.', q:'Hôm nay, bạn sẽ "bước trước" với ai – một cuộc trao đổi thẳng thắn đang chờ?'},
+  {k:'Chính trực', t:'Nói A làm A – và báo sớm khi có sự cố', p:'Che giấu sự cố là mất niềm tin kép: vừa có sự cố, vừa mất chữ tín. Thông báo sớm biến sự cố thành cơ hội thể hiện trách nhiệm.', q:'Có thông tin nào bạn đang chần chừ chưa chia sẻ với các bên liên quan?'},
+  {k:'Cam kết', t:'Bám sát đến cùng – giữ lời hứa với khách hàng và đồng đội', p:'Có lời xin lỗi nhưng không theo tới cùng thì khách hàng vẫn không hài lòng. Cam kết là tháo gỡ điểm nghẽn cho đến khi vấn đề được xử lý trọn vẹn.', q:'Mục tiêu nhỏ nào tuần này bạn đã hứa – và sẽ hoàn thành đúng hạn?'},
+  {k:'Đường cong lãng quên', t:'Sau 1 tuần, não quên 90% kiến thức', p:'Vì vậy soi chiếu định kỳ không phải là thủ tục – đó là cách duy nhất giữ cho thay đổi sống sót. 5 phút cuối ngày hoặc 10 phút đầu tuần.', q:'Bạn đã đặt lịch cố định cho việc soi chiếu tuần này chưa?'},
+  {k:'Văn hóa EIV', t:'Không có tình huống nào chỉ cần MỘT giá trị', p:'Người EIV sống cả bốn giá trị – Tiên Phong, Kết Nối, Chính Trực, Cam Kết – trong từng lựa chọn nhỏ, từng cuộc họp, từng cuộc gọi.', q:'Lựa chọn nhỏ nào hôm nay là cơ hội để bạn "sống cả bốn"?'}
+];
+
+const QUOTES = [
+  'Văn hóa không bắt đầu từ khẩu hiệu trên tường – văn hóa bắt đầu từ hành động của bạn hôm nay.',
+  'Học-tất-cả vượt trội hơn biết-tất-cả. – Satya Nadella',
+  'Mỗi lần thực hành, đường mòn mới trong não lại sâu thêm một chút.',
+  'Niềm tự hào cho ta biết điều cần GIỮ. Mong muốn thay đổi cho ta biết điều cần LÀM.',
+  'Tôi luôn kiểm soát được mình bước trước hay đứng chờ.',
+  'Văn hóa EIV được xây bởi mỗi hành động của tất cả chúng ta, mỗi ngày.',
+  'Sai là dữ liệu để học. Góp ý là được tặng thông tin.'
+];
+
+/* ================= STATE ================= */
+const KEY='eiv_svh_v1';
+const SYNC_URL='https://script.google.com/macros/s/AKfycbwNx3_kuBycXWy45y_2NCk8Y99azc6P4HWse_hsnfCmb_rPZBnFNrPO0UB4AddGaOif/exec';
+let S = load();
+if(!S.queue) S.queue=[];
+if(!S.deviceId) S.deviceId='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+function load(){
+  try{ const d=JSON.parse(localStorage.getItem(KEY)); if(d&&d.profile) return d; }catch(e){}
+  return {profile:null, checkins:{}, reflections:[], flashIdx:null};
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+
+/* ===== ĐỒNG BỘ VỀ GOOGLE SHEETS (ban tổ chức) ===== */
+function enqueue(evt){
+  if(!SYNC_URL) return;
+  evt.deviceId=S.deviceId;
+  if(S.profile){ evt.name=S.profile.name; evt.branch=S.profile.branch||''; }
+  S.queue.push(evt); save(); flushQueue();
+}
+let flushing=false;
+function flushQueue(){
+  if(!SYNC_URL||flushing||!S.queue.length) return;
+  flushing=true;
+  fetch(SYNC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(S.queue[0])})
+    .then(()=>{ S.queue.shift(); save(); flushing=false; if(S.queue.length) flushQueue(); })
+    .catch(()=>{ flushing=false; });
+}
+window.addEventListener('online',flushQueue);
+let syncT;
+function sendTodayCheckin(){
+  const tk=todayKey(); const ids=S.checkins[tk]||[];
+  enqueue({type:'checkin', date:tk,
+    behaviors:ids.map(i=>{const b=BEHAVIORS.find(x=>x.id===i);return b?b.text:i;}),
+    count:ids.length,
+    focusDone:S.profile?ids.includes(S.profile.focus):false});
+}
+
+/* ===== CỘNG ĐỒNG: TẶNG SAO / XẾP HẠNG / HUY HIỆU ===== */
+let COMM=null, commLoading=false;
+async function loadCommunity(force){
+  if(!SYNC_URL) return null;
+  if(COMM && !force && Date.now()-COMM.ts<180000) return COMM;
+  if(commLoading) return COMM;
+  commLoading=true;
+  try{
+    const r=await fetch(SYNC_URL+'?action=data');
+    const j=await r.json();
+    COMM={ts:Date.now(), people:j.people||[], kudos:j.kudos||[], stars:j.stars||{}, streaks:j.streaks||{}};
+  }catch(e){}
+  commLoading=false;
+  return COMM;
+}
+function renderKudosForm(){
+  const sel=document.getElementById('kd-behavior');
+  sel.innerHTML=BEHAVIORS.map(b=>`<option value="${b.text}">${b.value} – ${b.text}</option>`).join('');
+}
+async function renderCommunity(){
+  const c=await loadCommunity();
+  const feed=document.getElementById('kudos-feed');
+  const lb=document.getElementById('leaderboard');
+  const mine=document.getElementById('my-stars');
+  if(!c){ feed.innerHTML=lb.innerHTML=mine.innerHTML='<div class="lb-loading">Chưa kết nối được – thử lại sau nhé.</div>'; return; }
+  // Sao dành cho bạn
+  if(S.profile){
+    const esc0=s=>String(s||'').replace(/</g,'&lt;');
+    const myName=S.profile.name;
+    const received=(c.stars&&c.stars[myName])||0;
+    const myKudos=c.kudos.filter(k=>k.to===myName);
+    mine.innerHTML=
+      `<div class="my-star-total">Bạn đã nhận <b>${received}</b> ⭐ từ đồng đội</div>`+
+      (myKudos.length? myKudos.map(k=>
+        `<div class="kudos-item" style="border-color:var(--orange)">
+          <div class="k-head">⭐ Từ ${esc0(k.from)}</div>
+          <span class="k-tag">${esc0(k.behavior).slice(0,60)}</span>
+          <div class="k-msg">“${esc0(k.msg)}”</div>
+          <div class="k-date">${esc0(k.date)}</div>
+        </div>`).join('')
+      : '<div class="lb-loading">Chưa có sao nào – hãy tiếp tục sống giá trị, đồng đội sẽ nhìn thấy bạn! 💪</div>');
+    // Đánh dấu đã xem
+    S.seenStars=received; save();
+    document.getElementById('kudos-dot').style.display='none';
+  }
+  // datalist
+  document.getElementById('kd-people').innerHTML=c.people.map(p=>`<option value="${p.name.replace(/"/g,'&quot;')}">`).join('');
+  // feed
+  const esc=s=>String(s||'').replace(/</g,'&lt;');
+  feed.innerHTML=c.kudos.length? c.kudos.map(k=>
+    `<div class="kudos-item">
+      <div class="k-head">⭐ ${esc(k.from)} → ${esc(k.to)}</div>
+      <span class="k-tag">${esc(k.behavior).split('–')[0].slice(0,60)}</span>
+      <div class="k-msg">“${esc(k.msg)}”</div>
+      <div class="k-date">${esc(k.date)}</div>
+    </div>`).join('')
+    : '<div class="lb-loading">Chưa có ngôi sao nào được tặng. Hãy là người đầu tiên!</div>';
+  // leaderboard
+  const topStars=Object.entries(c.stars).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topStreaks=Object.entries(c.streaks).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const medal=i=>['🥇','🥈','🥉','4','5'][i]||'';
+  lb.innerHTML=
+    '<p style="font-weight:bold;font-size:13.5px;color:var(--navy);margin-top:4px">⭐ Nhận nhiều sao nhất</p>'+
+    (topStars.length?topStars.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} ⭐</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>')+
+    '<p style="font-weight:bold;font-size:13.5px;color:var(--navy);margin-top:14px">🔥 Chuỗi ngày dài nhất</p>'+
+    (topStreaks.length?topStreaks.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} 🔥</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>');
+  renderBadges();
+}
+function sendKudos(){
+  const to=document.getElementById('kd-to').value.trim();
+  const behavior=document.getElementById('kd-behavior').value;
+  const msg=document.getElementById('kd-msg').value.trim();
+  if(!S.profile){ toast('Hãy đăng ký thông tin trước nhé!'); return; }
+  if(!to){ toast('Bạn muốn tặng sao cho ai?'); return; }
+  if(to===S.profile.name){ toast('Tặng sao cho đồng nghiệp nhé, tự khen để dành lúc soi chiếu 😄'); return; }
+  if(!msg){ toast('Viết một lời nhắn cụ thể nhé – đó mới là món quà!'); return; }
+  enqueue({type:'kudos', refId:Date.now(), to, behavior, msg});
+  S.kudosGiven=(S.kudosGiven||0)+1; save();
+  document.getElementById('kd-to').value=''; document.getElementById('kd-msg').value='';
+  toast('⭐ Đã gửi! Ngôi sao của bạn sẽ xuất hiện trong giây lát');
+  setTimeout(()=>{ loadCommunity(true).then(renderCommunity); }, 4000);
+}
+function renderBadges(){
+  const el=document.getElementById('badges'); if(!el||!S.profile) return;
+  const streak=calcStreak();
+  const given=S.kudosGiven||0;
+  const received=(COMM&&COMM.stars&&COMM.stars[S.profile.name])||0;
+  const days=Object.keys(S.checkins).filter(k=>(S.checkins[k]||[]).length).length;
+  const defs=[
+    {ico:'🔥', name:'Tuần rực lửa', cond:'Check-in 7 ngày liên tiếp', ok:streak>=7},
+    {ico:'⚡', name:'Hai tuần bền bỉ', cond:'Check-in 14 ngày liên tiếp', ok:streak>=14},
+    {ico:'🏆', name:'Trọn vẹn hành trình', cond:'Thực hành 30 ngày', ok:days>=30},
+    {ico:'💝', name:'Người hào phóng', cond:'Tặng 5 ngôi sao cho đồng nghiệp', ok:given>=5},
+    {ico:'🌟', name:'Được đồng đội tin yêu', cond:'Nhận 3 ngôi sao ghi nhận', ok:received>=3}
+  ];
+  el.innerHTML=defs.map(b=>`<div class="badge ${b.ok?'earned':''}"><div class="b-ico">${b.ico}</div><div><div class="b-name">${b.name}${b.ok?' ✓':''}</div><div class="b-cond">${b.cond}</div></div></div>`).join('');
+}
+
+function todayKey(d){ const x=d||new Date(); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); }
+function fmtVN(d){ const days=['Chủ nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy']; return days[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(); }
+
+/* ================= ONBOARDING ================= */
+let obSel=null;
+function renderOnboarding(){
+  const w=document.getElementById('ob-behaviors');
+  w.innerHTML=BEHAVIORS.map(b=>`<div class="choose-b" id="ob-${b.id}" onclick="obPick('${b.id}')"><span class="tag">${b.value}</span><br>${b.text}</div>`).join('');
+}
+function obPick(id){
+  obSel=id;
+  BEHAVIORS.forEach(b=>document.getElementById('ob-'+b.id).classList.toggle('sel', b.id===id));
+}
+function finishOnboarding(){
+  const name=document.getElementById('ob-name').value.trim();
+  const branch=document.getElementById('ob-branch').value.trim();
+  const commit=document.getElementById('ob-commit').value.trim();
+  if(!name){ toast('Bạn ơi, cho mình biết tên nhé!'); return; }
+  if(!obSel){ toast('Hãy chọn 1 hành vi trọng tâm nhé!'); return; }
+  if(!commit){ toast('Viết cam kết "Tôi sẽ..." của bạn nhé!'); return; }
+  S.profile={name, branch, focus:obSel, commitment:commit, startDate:todayKey()};
+  save();
+  document.getElementById('onboarding').style.display='none';
+  renderAll();
+  toast('Chào mừng '+name+' đến với hành trình 30 ngày! 🚀');
+}
+function resetApp(){
+  if(confirm('Cài đặt lại thông tin cá nhân? Dữ liệu check-in và soi chiếu vẫn được giữ nguyên.')){
+    document.getElementById('onboarding').style.display='block';
+    if(S.profile){
+      document.getElementById('ob-name').value=S.profile.name||'';
+      document.getElementById('ob-branch').value=S.profile.branch||'';
+      document.getElementById('ob-commit').value=S.profile.commitment||'';
+      if(S.profile.focus) obPick(S.profile.focus);
+    }
+  }
+}
+
+/* ================= TODAY / CHECK-IN ================= */
+function renderToday(){
+  const tk=todayKey();
+  const done=S.checkins[tk]||[];
+  document.getElementById('today-date').textContent=fmtVN(new Date());
+  const list=document.getElementById('behavior-list');
+  list.innerHTML=BEHAVIORS.map(b=>{
+    const isDone=done.includes(b.id);
+    const isFocus=S.profile&&S.profile.focus===b.id;
+    return `<div class="behavior ${isDone?'done':''} ${isFocus?'focus-b':''}" onclick="toggleBehavior('${b.id}')">
+      ${isFocus?'<span class="star">TRỌNG TÂM</span>':''}
+      <div class="check">${isDone?'✓':''}</div>
+      <div class="txt"><span class="tag">${b.value}</span><br>${b.text}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('today-count').textContent=done.length+'/5 hành vi hôm nay';
+  const focusDone=S.profile&&done.includes(S.profile.focus);
+  document.getElementById('banner-done').style.display=focusDone?'block':'none';
+  const dayN=Math.floor((Date.now()-new Date(S.profile?S.profile.startDate:todayKey()).getTime())/86400000);
+  document.getElementById('daily-quote').textContent='“'+QUOTES[Math.abs(dayN)%QUOTES.length]+'”';
+}
+function toggleBehavior(id){
+  const tk=todayKey();
+  if(!S.checkins[tk]) S.checkins[tk]=[];
+  const i=S.checkins[tk].indexOf(id);
+  if(i>=0) S.checkins[tk].splice(i,1); else S.checkins[tk].push(id);
+  save(); renderToday(); renderHeader(); renderProgress();
+  clearTimeout(syncT); syncT=setTimeout(sendTodayCheckin,1500);
+}
+
+/* ================= STREAK ================= */
+function calcStreak(){
+  let streak=0; const d=new Date();
+  if(!(S.checkins[todayKey(d)]||[]).length) d.setDate(d.getDate()-1); // hôm nay chưa check-in thì tính từ hôm qua
+  while((S.checkins[todayKey(d)]||[]).length){ streak++; d.setDate(d.getDate()-1); }
+  return streak;
+}
+function renderHeader(){
+  document.getElementById('hd-streak').textContent=calcStreak();
+  if(S.profile){
+    const dayN=Math.min(30, Math.floor((Date.now()-new Date(S.profile.startDate).getTime())/86400000)+1);
+    document.getElementById('hd-greeting').textContent='Chào '+S.profile.name.split(' ').pop()+'! Ngày '+dayN+'/30 của hành trình';
+  }
+}
+
+/* ================= REFLECTION ================= */
+function weekLabel(d){
+  const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day);
+  return 'Tuần '+x.getDate()+'/'+(x.getMonth()+1)+' – '+(x.getDate()+6<=new Date(x.getFullYear(),x.getMonth()+1,0).getDate()?x.getDate()+6+'/'+(x.getMonth()+1):new Date(x.getTime()+6*86400000).getDate()+'/'+(new Date(x.getTime()+6*86400000).getMonth()+1));
+}
+function renderReflectForm(){
+  const sel=document.getElementById('rf-behavior');
+  sel.innerHTML=BEHAVIORS.map(b=>`<option value="${b.id}" ${S.profile&&S.profile.focus===b.id?'selected':''}>${b.text}</option>`).join('');
+}
+function saveReflection(){
+  const get=id=>document.getElementById(id).value.trim();
+  const r={
+    id:Date.now(), date:todayKey(), week:weekLabel(new Date()),
+    behavior:document.getElementById('rf-behavior').value,
+    good:get('rf-good'), challenge:get('rf-challenge'), lesson:get('rf-lesson'), next:get('rf-next')
+  };
+  if(!r.good&&!r.challenge&&!r.lesson&&!r.next){ toast('Hãy viết ít nhất một điều bạn nhận ra nhé!'); return; }
+  S.reflections.unshift(r); save();
+  const bTxt=(BEHAVIORS.find(x=>x.id===r.behavior)||{}).text||'';
+  enqueue({type:'reflection', refId:r.id, date:r.date, week:r.week, behavior:bTxt,
+    good:r.good, challenge:r.challenge, lesson:r.lesson, next:r.next});
+  ['rf-good','rf-challenge','rf-lesson','rf-next'].forEach(i=>document.getElementById(i).value='');
+  renderReflections(); renderProgress();
+  toast('Đã lưu! Bấm "Chia sẻ" để gửi lên nhóm 💪');
+  goPage('reflect', document.querySelector('nav button[data-page=reflect]'));
+  document.getElementById('reflection-list').scrollIntoView({behavior:'smooth'});
+}
+function reflectionText(r){
+  const b=BEHAVIORS.find(x=>x.id===r.behavior);
+  const name=S.profile?S.profile.name:''; const br=S.profile&&S.profile.branch?(' – '+S.profile.branch):'';
+  return `🪞 SOI CHIẾU TUẦN – ${name}${br}\n(${r.week})\n\n✅ Hành vi tôi thực hành: ${b?b.text:''}\n\n🌟 Điều tôi làm tốt & kết quả:\n${r.good||'–'}\n\n🧗 Thách thức:\n${r.challenge||'–'}\n\n💡 Bài học tôi nhận ra:\n${r.lesson||'–'}\n\n🎯 Tuần tới tôi sẽ làm khác:\n${r.next||'–'}\n\n#SongVanHoaEIV #TienPhong #KetNoi #ChinhTruc #CamKet`;
+}
+function shareReflection(id){
+  const r=S.reflections.find(x=>x.id===id); if(!r) return;
+  const text=reflectionText(r);
+  if(navigator.share){ navigator.share({text}).catch(()=>copyText(text)); }
+  else copyText(text);
+}
+function copyText(text){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>toast('Đã sao chép! Dán vào nhóm Lark/Zalo nhé 📋'),()=>fallbackCopy(text));
+  } else fallbackCopy(text);
+}
+function fallbackCopy(text){
+  const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta);
+  ta.select(); try{document.execCommand('copy'); toast('Đã sao chép! Dán vào nhóm Lark/Zalo nhé 📋');}catch(e){toast('Không sao chép được – hãy chụp màn hình nhé');}
+  document.body.removeChild(ta);
+}
+function deleteReflection(id){
+  if(confirm('Xóa bài soi chiếu này?')){ S.reflections=S.reflections.filter(x=>x.id!==id); save(); renderReflections(); renderProgress(); }
+}
+function renderReflections(){
+  const w=document.getElementById('reflection-list');
+  if(!S.reflections.length){ w.innerHTML='<p style="font-size:13.5px;color:var(--gray)">Chưa có bài soi chiếu nào. Tuần đầu tiên của bạn bắt đầu từ hôm nay!</p>'; return; }
+  w.innerHTML=S.reflections.map(r=>{
+    const b=BEHAVIORS.find(x=>x.id===r.behavior);
+    const body=['🌟 '+(r.good||'–'),'🧗 '+(r.challenge||'–'),'💡 '+(r.lesson||'–'),'🎯 '+(r.next||'–')].join('\n');
+    return `<div class="reflection-item">
+      <div class="week">${r.week}</div>
+      <div class="date">${b?b.text:''}</div>
+      <div class="body">${body.replace(/</g,'&lt;')}</div>
+      <div class="actions"><a onclick="shareReflection(${r.id})">📤 Chia sẻ</a><a onclick="deleteReflection(${r.id})" style="color:#B4462F">Xóa</a></div>
+    </div>`;
+  }).join('');
+}
+
+/* ================= FLASHCARD ================= */
+function flashIndexToday(){
+  const start=S.profile?new Date(S.profile.startDate):new Date();
+  const n=Math.floor((Date.now()-start.getTime())/86400000);
+  return Math.abs(n)%FLASHCARDS.length;
+}
+let flashIdx=null;
+function renderFlash(){
+  if(flashIdx===null) flashIdx=flashIndexToday();
+  const f=FLASHCARDS[flashIdx];
+  document.getElementById('flash-card').innerHTML=
+    `<div class="kicker">${f.k}</div><h3>${f.t}</h3><p>${f.p}</p><div class="q">💬 ${f.q}</div>`;
+  document.getElementById('flash-count').textContent='Thẻ '+(flashIdx+1)+'/'+FLASHCARDS.length+' • Thẻ hôm nay: số '+(flashIndexToday()+1);
+}
+function moveFlash(d){ flashIdx=(flashIdx+d+FLASHCARDS.length)%FLASHCARDS.length; renderFlash(); }
+
+/* ================= PROGRESS ================= */
+function renderProgress(){
+  if(!S.profile) return;
+  const start=new Date(S.profile.startDate);
+  const grid=document.getElementById('grid30'); let html='';
+  const tk=todayKey();
+  let daysDone=0, total=0;
+  for(let i=0;i<30;i++){
+    const d=new Date(start.getTime()+i*86400000); const k=todayKey(d);
+    const n=(S.checkins[k]||[]).length;
+    if(n>0){daysDone++; total+=n;}
+    let cls=''; if(n>=5)cls='l3'; else if(n>=3)cls='l2'; else if(n>=1)cls='l1';
+    if(k===tk)cls+=' today';
+    html+=`<div class="cell ${cls}" title="${k}: ${n} hành vi">${i+1}</div>`;
+  }
+  grid.innerHTML=html;
+  document.getElementById('st-days').textContent=daysDone;
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-reflect').textContent=S.reflections.length;
+  const dayN=Math.min(30,Math.floor((Date.now()-start.getTime())/86400000)+1);
+  document.getElementById('progress-sub').textContent='Bắt đầu '+start.getDate()+'/'+(start.getMonth()+1)+' • Hôm nay là ngày '+dayN+'/30';
+  // Bars per behavior
+  const counts={}; BEHAVIORS.forEach(b=>counts[b.id]=0);
+  Object.values(S.checkins).forEach(arr=>arr.forEach(id=>{if(counts[id]!==undefined)counts[id]++;}));
+  const max=Math.max(1,...Object.values(counts));
+  document.getElementById('behavior-bars').innerHTML=BEHAVIORS.map(b=>
+    `<div class="bar-row"><div class="b-label">${b.text}</div><div class="b-track"><div class="b-fill" style="width:${counts[b.id]/max*100}%"></div></div><div class="b-num">${counts[b.id]}</div></div>`
+  ).join('');
+  document.getElementById('my-commitment').textContent='“'+S.profile.commitment+'”';
+}
+
+/* ================= NAV & UTIL ================= */
+function goPage(p, btn){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  window.scrollTo({top:0});
+  if(p==='kudos') renderCommunity();
+}
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ================= INIT ================= */
+function renderAll(){ renderHeader(); renderToday(); renderReflectForm(); renderReflections(); renderFlash(); renderProgress(); renderKudosForm(); renderBadges(); }
+renderOnboarding();
+if(S.profile){ document.getElementById('onboarding').style.display='none'; renderAll(); }
+flushQueue();
+/* Báo sao mới khi mở app */
+if(S.profile&&SYNC_URL){
+  loadCommunity().then(c=>{
+    if(!c) return;
+    const received=(c.stars&&c.stars[S.profile.name])||0;
+    if(received>(S.seenStars||0)){
+      document.getElementById('kudos-dot').style.display='block';
+      toast('🌟 Bạn vừa nhận '+(received-(S.seenStars||0))+' ngôi sao mới! Xem ở tab Ghi nhận nhé');
+    }
+    renderBadges();
+  });
+}
+</script>
+</body>
+</html>
