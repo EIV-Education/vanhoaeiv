@@ -261,11 +261,6 @@
       <h2>🌟 Ghi nhận mới nhất</h2>
       <div id="kudos-feed"><div class="lb-loading">Đang tải...</div></div>
     </div>
-    <div class="card">
-      <h2>🏆 Bảng xếp hạng</h2>
-      <p class="sub">Top chuỗi ngày check-in 🔥 toàn EIV.</p>
-      <div id="leaderboard"><div class="lb-loading">Đang tải...</div></div>
-    </div>
   </div>
 
   <!-- ===== PAGE: FLASHCARD ===== -->
@@ -328,6 +323,11 @@
       <h2>🏆 Top nhận sao</h2>
       <p class="sub">Những người được đồng đội ghi nhận nhiều nhất.</p>
       <div id="dash-top-stars"><div class="lb-loading">Đang tải...</div></div>
+    </div>
+    <div class="card">
+      <h2>🔥 Top chuỗi ngày check-in</h2>
+      <p class="sub">Chuỗi ngày check-in liên tiếp dài nhất toàn EIV.</p>
+      <div id="dash-top-streaks"><div class="lb-loading">Đang tải...</div></div>
     </div>
   </div>
 
@@ -441,9 +441,8 @@ function renderKudosForm(){
 async function renderCommunity(){
   const c=await loadCommunity();
   const feed=document.getElementById('kudos-feed');
-  const lb=document.getElementById('leaderboard');
   const mine=document.getElementById('my-stars');
-  if(!c){ feed.innerHTML=lb.innerHTML=mine.innerHTML='<div class="lb-loading">Chưa kết nối được – thử lại sau nhé.</div>'; return; }
+  if(!c){ feed.innerHTML=mine.innerHTML='<div class="lb-loading">Chưa kết nối được – thử lại sau nhé.</div>'; return; }
   // Sao dành cho bạn
   if(S.profile){
     const esc0=s=>String(s||'').replace(/</g,'&lt;');
@@ -476,22 +475,21 @@ async function renderCommunity(){
       <div class="k-date">${esc(k.date)}</div>
     </div>`).join('')
     : '<div class="lb-loading">Chưa có ngôi sao nào được tặng. Hãy là người đầu tiên!</div>';
-  // leaderboard (chuỗi ngày check-in)
-  const topStreaks=Object.entries(c.streaks).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  lb.innerHTML=
-    (topStreaks.length?topStreaks.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} 🔥</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>');
   renderBadges();
 }
 function medal(i){ return ['🥇','🥈','🥉','4','5'][i]||''; }
 async function renderDashboard(){
   const c=await loadCommunity();
   const starsEl=document.getElementById('dash-top-stars');
+  const streaksEl=document.getElementById('dash-top-streaks');
   const countEl=document.getElementById('dash-today-count');
-  if(!c){ starsEl.innerHTML='<div class="lb-loading">Chưa kết nối được – thử lại sau nhé.</div>'; return; }
+  if(!c){ starsEl.innerHTML=streaksEl.innerHTML='<div class="lb-loading">Chưa kết nối được – thử lại sau nhé.</div>'; return; }
   countEl.textContent=(c.today&&c.today.count)||0;
   const esc=s=>String(s||'').replace(/</g,'&lt;');
   const topStars=Object.entries(c.stars).sort((a,b)=>b[1]-a[1]).slice(0,5);
   starsEl.innerHTML=topStars.length?topStars.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} ⭐</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>';
+  const topStreaks=Object.entries(c.streaks).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  streaksEl.innerHTML=topStreaks.length?topStreaks.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} 🔥</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>';
 }
 function sendKudos(){
   const to=document.getElementById('kd-to').value.trim();
