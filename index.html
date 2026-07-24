@@ -420,19 +420,21 @@ function sendTodayCheckin(){
 }
 
 /* ===== CỘNG ĐỒNG: TẶNG SAO / XẾP HẠNG / HUY HIỆU ===== */
-let COMM=null, commLoading=false;
+let COMM=null, commLoading=null;
 async function loadCommunity(force){
   if(!SYNC_URL) return null;
   if(COMM && !force && Date.now()-COMM.ts<180000) return COMM;
-  if(commLoading) return COMM;
-  commLoading=true;
-  try{
-    const r=await fetch(SYNC_URL+'?action=data');
-    const j=await r.json();
-    COMM={ts:Date.now(), people:j.people||[], kudos:j.kudos||[], stars:j.stars||{}, streaks:j.streaks||{}, today:j.today||{count:0}};
-  }catch(e){}
-  commLoading=false;
-  return COMM;
+  if(commLoading) return commLoading;
+  commLoading=(async()=>{
+    try{
+      const r=await fetch(SYNC_URL+'?action=data');
+      const j=await r.json();
+      COMM={ts:Date.now(), people:j.people||[], kudos:j.kudos||[], stars:j.stars||{}, streaks:j.streaks||{}, today:j.today||{count:0}};
+    }catch(e){}
+    commLoading=null;
+    return COMM;
+  })();
+  return commLoading;
 }
 function renderKudosForm(){
   const sel=document.getElementById('kd-behavior');
