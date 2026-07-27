@@ -641,7 +641,12 @@ function reflectionText(r){
 function shareReflection(id){
   const r=S.reflections.find(x=>x.id===id); if(!r) return;
   const text=reflectionText(r);
-  if(navigator.share){ navigator.share({text}).catch(()=>copyText(text)); }
+  if(SYNC_URL){
+    fetch(SYNC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'larkshare', text})})
+      .catch(()=>{});
+    toast('🎉 Đã gửi bài soi chiếu vào nhóm Lark!');
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(()=>{});
+  } else if(navigator.share){ navigator.share({text}).catch(()=>copyText(text)); }
   else copyText(text);
 }
 function copyText(text){
