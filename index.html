@@ -317,12 +317,18 @@
       <p class="sub">Tổng quan hoạt động thực hành Sống Văn Hóa EIV toàn công ty.</p>
       <div class="stat-row">
         <div class="stat"><div class="n" id="dash-today-count">0</div><div class="l">người đã check-in hôm nay</div></div>
+        <div class="stat"><div class="n" id="dash-reflect-count">0</div><div class="l">lượt soi chiếu toàn công ty</div></div>
       </div>
     </div>
     <div class="card">
       <h2>🏆 Top nhận sao</h2>
       <p class="sub">Những người được đồng đội ghi nhận nhiều nhất.</p>
       <div id="dash-top-stars"><div class="lb-loading">Đang tải...</div></div>
+    </div>
+    <div class="card">
+      <h2>💝 Top người hào phóng nhất</h2>
+      <p class="sub">Những người tặng sao ghi nhận đồng đội nhiều nhất.</p>
+      <div id="dash-top-givers"><div class="lb-loading">Đang tải...</div></div>
     </div>
     <div class="card">
       <h2>🔥 Top chuỗi ngày check-in</h2>
@@ -429,7 +435,7 @@ async function loadCommunity(force){
     try{
       const r=await fetch(SYNC_URL+'?action=data');
       const j=await r.json();
-      COMM={ts:Date.now(), people:j.people||[], kudos:j.kudos||[], stars:j.stars||{}, streaks:j.streaks||{}, today:j.today||{count:0}};
+      COMM={ts:Date.now(), people:j.people||[], kudos:j.kudos||[], stars:j.stars||{}, streaks:j.streaks||{}, today:j.today||{count:0}, given:j.given||{}, reflectionsTotal:j.reflectionsTotal||0};
     }catch(e){}
     commLoading=null;
     return COMM;
@@ -483,13 +489,18 @@ function medal(i){ return ['🥇','🥈','🥉','4','5'][i]||''; }
 async function renderDashboard(){
   const c=await loadCommunity();
   const starsEl=document.getElementById('dash-top-stars');
+  const giversEl=document.getElementById('dash-top-givers');
   const streaksEl=document.getElementById('dash-top-streaks');
   const countEl=document.getElementById('dash-today-count');
-  if(!c){ starsEl.innerHTML=streaksEl.innerHTML='<div class="lb-loading">Chưa kết nối được – thử lại sau nhé.</div>'; return; }
+  const reflectEl=document.getElementById('dash-reflect-count');
+  if(!c){ starsEl.innerHTML=giversEl.innerHTML=streaksEl.innerHTML='<div class="lb-loading">Chưa kết nối được – thử lại sau nhé.</div>'; return; }
   countEl.textContent=(c.today&&c.today.count)||0;
+  reflectEl.textContent=c.reflectionsTotal||0;
   const esc=s=>String(s||'').replace(/</g,'&lt;');
   const topStars=Object.entries(c.stars).sort((a,b)=>b[1]-a[1]).slice(0,5);
   starsEl.innerHTML=topStars.length?topStars.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} ⭐</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>';
+  const topGivers=Object.entries(c.given).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  giversEl.innerHTML=topGivers.length?topGivers.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} 💝</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>';
   const topStreaks=Object.entries(c.streaks).sort((a,b)=>b[1]-a[1]).slice(0,5);
   streaksEl.innerHTML=topStreaks.length?topStreaks.map((x,i)=>`<div class="lb-row"><div class="rank">${medal(i)}</div><div class="lb-name">${esc(x[0])}</div><div class="lb-score">${x[1]} 🔥</div></div>`).join(''):'<div class="lb-loading">Chưa có dữ liệu</div>';
 }
