@@ -352,7 +352,7 @@
     <button data-page="reflect" onclick="goPage('reflect',this)"><span class="ico">🪞</span>Soi chiếu</button>
     <button data-page="kudos" onclick="goPage('kudos',this)"><span class="ico">⭐</span>Ghi nhận<span class="nav-dot" id="kudos-dot" style="display:none"></span></button>
     <button data-page="flash" onclick="goPage('flash',this)"><span class="ico">🧠</span>Flashcard</button>
-    <button data-page="progress" onclick="goPage('progress',this)"><span class="ico">📊</span>Tiến bộ</button>
+    <button data-page="progress" onclick="goPage('progress',this)"><span class="ico">📊</span>Tiến Độ</button>
     <button data-page="dashboard" onclick="goPage('dashboard',this)"><span class="ico">📈</span>Dashboard</button>
   </div>
 </nav>
@@ -573,6 +573,7 @@ function finishOnboarding(){
   save();
   document.getElementById('onboarding').style.display='none';
   renderAll();
+  hydrateFromServer(name);
   toast('Chào mừng '+name+' đến với hành trình 30 ngày! 🚀');
 }
 function resetApp(){
@@ -768,8 +769,27 @@ function toast(msg){
 
 /* ================= INIT ================= */
 function renderAll(){ renderHeader(); renderToday(); renderReflectForm(); renderReflections(); renderFlash(); renderProgress(); renderKudosForm(); renderBadges(); }
+function hydrateFromServer(name){
+  if(!SYNC_URL||!name) return;
+  fetch(SYNC_URL+'?action=history&name='+encodeURIComponent(name))
+    .then(r=>r.json())
+    .then(j=>{
+      const byDate=j.checkins||{};
+      let changed=false, earliest=null;
+      Object.keys(byDate).forEach(date=>{
+        if(!earliest||date<earliest) earliest=date;
+        const ids=byDate[date].map(t=>{const b=BEHAVIORS.find(x=>x.text===t);return b?b.id:null;}).filter(Boolean);
+        if(!ids.length) return;
+        if(!S.checkins[date]) S.checkins[date]=[];
+        ids.forEach(id=>{ if(!S.checkins[date].includes(id)){ S.checkins[date].push(id); changed=true; } });
+      });
+      if(earliest&&S.profile&&(!S.profile.startDate||earliest<S.profile.startDate)){ S.profile.startDate=earliest; changed=true; }
+      if(changed){ save(); renderAll(); }
+    })
+    .catch(()=>{});
+}
 renderOnboarding();
-if(S.profile){ document.getElementById('onboarding').style.display='none'; renderAll(); }
+if(S.profile){ document.getElementById('onboarding').style.display='none'; renderAll(); hydrateFromServer(S.profile.name); }
 flushQueue();
 /* Báo sao mới khi mở app */
 if(S.profile&&SYNC_URL){
