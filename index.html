@@ -116,6 +116,7 @@
   .choose-b .tag{font-size:10.5px;font-weight:bold;color:var(--blue)}
 
   .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;font-size:14px;z-index:200;opacity:0;pointer-events:none;transition:.3s;max-width:92%;text-align:center}
+  .browser-warning{position:fixed;top:0;left:0;right:0;z-index:300;background:#B4462F;color:#fff;font-size:12.5px;text-align:center;padding:10px 16px;line-height:1.5}
   .toast.show{opacity:1}
   .quote{margin-top:14px;text-align:center;font-size:13px;font-style:italic;color:var(--gray);padding:0 10px;line-height:1.6}
   .banner-done{background:var(--green-light);border:1.5px solid var(--green);color:#1D6B40;border-radius:12px;padding:12px 14px;font-size:14px;margin-top:12px;display:none}
@@ -147,6 +148,8 @@
 </style>
 </head>
 <body>
+
+<div id="browser-warning" class="browser-warning" style="display:none">⚠️ Trình duyệt hiện tại có thể <b>không lưu được thông tin</b> của bạn (do mở trong Zalo/Facebook/Lark... hoặc chế độ ẩn danh). Hãy bấm nút "⋯" hoặc "Mở bằng trình duyệt" để mở link này bằng Safari/Chrome, thông tin sẽ được lưu ổn định.</div>
 
 <!-- ===== ONBOARDING ===== -->
 <div id="onboarding">
@@ -398,7 +401,23 @@ function load(){
   try{ const d=JSON.parse(localStorage.getItem(KEY)); if(d&&d.profile) return d; }catch(e){}
   return {profile:null, checkins:{}, reflections:[], flashIdx:null};
 }
-function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+function showStorageWarning(){
+  const el=document.getElementById('browser-warning');
+  if(el) el.style.display='block';
+}
+function checkStorageHealth(){
+  try{
+    const t='__t__'+Date.now();
+    localStorage.setItem(t,'1');
+    localStorage.removeItem(t);
+  }catch(e){ showStorageWarning(); return; }
+  if(/Zalo|FBAN|FBAV|Instagram|Line\/|MicroMessenger|Lark|Feishu/i.test(navigator.userAgent||'')) showStorageWarning();
+}
+checkStorageHealth();
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch(e){ showStorageWarning(); }
+}
 
 /* ===== ĐỒNG BỘ VỀ GOOGLE SHEETS (ban tổ chức) ===== */
 function enqueue(evt){
