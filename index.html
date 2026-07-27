@@ -784,7 +784,15 @@ function hydrateFromServer(name){
         ids.forEach(id=>{ if(!S.checkins[date].includes(id)){ S.checkins[date].push(id); changed=true; } });
       });
       if(earliest&&S.profile&&(!S.profile.startDate||earliest<S.profile.startDate)){ S.profile.startDate=earliest; changed=true; }
-      if(changed){ save(); renderAll(); }
+      const existingIds=new Set(S.reflections.map(r=>String(r.id)));
+      (j.reflections||[]).forEach(r=>{
+        if(!r.id||existingIds.has(String(r.id))) return;
+        const b=BEHAVIORS.find(x=>x.text===r.behaviorText);
+        S.reflections.push({id:r.id, date:r.date||'', week:r.week||'', behavior:b?b.id:'', good:r.good||'', challenge:r.challenge||'', lesson:r.lesson||'', next:r.next||''});
+        existingIds.add(String(r.id));
+        changed=true;
+      });
+      if(changed){ S.reflections.sort((a,b)=>b.id-a.id); save(); renderAll(); }
     })
     .catch(()=>{});
 }
