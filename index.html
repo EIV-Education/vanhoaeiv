@@ -146,6 +146,18 @@
   .nav-dot{position:absolute;top:5px;right:20%;width:9px;height:9px;border-radius:50%;background:#E5484D;border:1.5px solid #fff}
   .my-star-total{text-align:center;font-size:15px;color:var(--navy);background:var(--orange-light);border-radius:12px;padding:10px;margin-bottom:4px}
   .my-star-total b{font-size:22px;color:var(--orange)}
+
+  /* Reflect community feed */
+  .rc-item{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px;background:#fff;cursor:pointer;transition:.15s}
+  .rc-item:active{transform:scale(.99)}
+  .rc-item .rc-head{font-weight:bold;color:var(--navy);font-size:14px}
+  .rc-item .rc-meta{font-size:11.5px;color:var(--gray);margin:2px 0 6px}
+  .rc-item .rc-tag{display:inline-block;font-size:10.5px;font-weight:bold;color:var(--blue);background:var(--blue-light);padding:1px 8px;border-radius:99px;margin-bottom:6px}
+  .rc-item .rc-preview{font-size:13px;color:var(--ink);font-style:italic}
+  .rc-item .rc-hint{font-size:11px;color:var(--blue);margin-top:6px;font-weight:bold}
+  .rc-item .rc-full{display:none;margin-top:8px;font-size:13px;white-space:pre-wrap;border-top:1px dashed var(--line);padding-top:8px}
+  .rc-item.open .rc-preview,.rc-item.open .rc-hint{display:none}
+  .rc-item.open .rc-full{display:block}
 </style>
 </head>
 <body>
@@ -239,6 +251,16 @@
       <h2>📖 Nhật ký soi chiếu</h2>
       <p class="sub">Bấm "Chia sẻ" để sao chép nội dung và dán vào nhóm Lark/Zalo.</p>
       <div id="reflection-list"><p style="font-size:13.5px;color:var(--gray)">Chưa có bài soi chiếu nào. Tuần đầu tiên của bạn bắt đầu từ hôm nay!</p></div>
+    </div>
+
+    <div class="card">
+      <h2>🌍 Soi chiếu của mọi người</h2>
+      <p class="sub">Học từ cách đồng đội đang thực hành & soi chiếu mỗi tuần. Chạm vào 1 bài để xem đầy đủ.</p>
+      <div class="stat-row" style="margin-top:0">
+        <div class="stat"><div class="n" id="reflect-total-mine">0</div><div class="l">bài của bạn</div></div>
+        <div class="stat"><div class="n" id="reflect-total-all">0</div><div class="l">bài toàn công ty</div></div>
+      </div>
+      <div id="reflect-feed"><div class="lb-loading">Đang tải...</div></div>
     </div>
   </div>
 
@@ -443,7 +465,7 @@ async function loadCommunity(force){
     try{
       const r=await fetch(SYNC_URL+'?action=data');
       const j=await r.json();
-      COMM={ts:Date.now(), people:j.people||[], kudos:j.kudos||[], stars:j.stars||{}, streaks:j.streaks||{}, today:j.today||{count:0}, given:j.given||{}, reflectionsTotal:j.reflectionsTotal||0};
+      COMM={ts:Date.now(), people:j.people||[], kudos:j.kudos||[], reflections:j.reflections||[], stars:j.stars||{}, streaks:j.streaks||{}, today:j.today||{count:0}, given:j.given||{}, reflectionsTotal:j.reflectionsTotal||0};
     }catch(e){}
     commLoading=null;
     return COMM;
@@ -703,6 +725,27 @@ function renderReflections(){
     </div>`;
   }).join('');
 }
+async function renderReflectCommunity(){
+  document.getElementById('reflect-total-mine').textContent=S.reflections.length;
+  const c=await loadCommunity();
+  const wrap=document.getElementById('reflect-feed');
+  if(!c){ wrap.innerHTML='<div class="lb-loading">Chưa kết nối được – thử lại sau nhé.</div>'; return; }
+  document.getElementById('reflect-total-all').textContent=c.reflectionsTotal||0;
+  const esc=s=>String(s||'').replace(/</g,'&lt;');
+  const items=c.reflections||[];
+  wrap.innerHTML=items.length? items.map(r=>{
+    const preview=r.good||r.lesson||r.challenge||r.next||'';
+    const full=['🌟 '+esc(r.good||'–'),'🧗 '+esc(r.challenge||'–'),'💡 '+esc(r.lesson||'–'),'🎯 '+esc(r.next||'–')].join('\n');
+    return `<div class="rc-item" onclick="this.classList.toggle('open')">
+      <div class="rc-head">🪞 ${esc(r.name)}${r.branch?' · '+esc(r.branch):''}</div>
+      <div class="rc-meta">${esc(r.week)} · ${esc(r.date)}</div>
+      <span class="rc-tag">${esc(r.behavior).slice(0,60)}</span>
+      <div class="rc-preview">🌟 ${esc(preview.slice(0,110))}${preview.length>110?'…':''}</div>
+      <div class="rc-hint">👆 Chạm để xem đầy đủ</div>
+      <div class="rc-full">${full}</div>
+    </div>`;
+  }).join('') : '<div class="lb-loading">Chưa có bài soi chiếu nào được chia sẻ.</div>';
+}
 
 /* ================= FLASHCARD ================= */
 function flashIndexToday(){
@@ -760,6 +803,7 @@ function goPage(p, btn){
   window.scrollTo({top:0});
   if(p==='kudos') renderCommunity();
   if(p==='dashboard') renderDashboard();
+  if(p==='reflect') renderReflectCommunity();
 }
 let toastTimer;
 function toast(msg){
