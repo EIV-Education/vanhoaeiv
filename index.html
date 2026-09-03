@@ -41,6 +41,9 @@
   .behavior.done .check{background:var(--green);border-color:var(--green)}
   .behavior .txt{font-size:14.5px}
   .behavior .tag{display:inline-block;font-size:10.5px;font-weight:bold;letter-spacing:.3px;color:var(--blue);background:var(--blue-light);padding:2px 8px;border-radius:99px;margin-bottom:3px}
+  .value-group{margin-top:20px}
+  .value-group:first-child{margin-top:0}
+  .value-head{font-size:12.5px;font-weight:bold;letter-spacing:.4px;color:var(--navy);text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1.5px solid var(--line)}
   .behavior.focus-b{position:relative}
   .behavior.focus-b .star{position:absolute;top:-8px;right:10px;background:var(--orange);color:#fff;font-size:10px;font-weight:bold;padding:2px 8px;border-radius:99px}
   .today-count{font-size:13.5px;color:var(--gray);text-align:center;margin-top:8px}
@@ -181,7 +184,7 @@
 
     <div class="card">
       <h2>Chọn 1 hành vi trọng tâm</h2>
-      <p class="sub">Bạn sẽ thực hành cả 5 hành vi, nhưng hãy chọn 1 hành vi để cam kết rèn luyện sâu nhất trong 30 ngày tới.</p>
+      <p class="sub">Bạn sẽ thực hành cả 12 hành vi thuộc 4 giá trị, nhưng hãy chọn 1 hành vi để cam kết rèn luyện sâu nhất trong 30 ngày tới.</p>
       <div id="ob-behaviors"></div>
     </div>
 
@@ -311,9 +314,9 @@
       <div class="grid30" id="grid30"></div>
       <div class="legend">
         <span><i style="background:#EDF0F4"></i>Chưa check-in</span>
-        <span><i style="background:#BFDFC9"></i>1–2 hành vi</span>
-        <span><i style="background:#6FC08D"></i>3–4 hành vi</span>
-        <span><i style="background:var(--green)"></i>Cả 5 hành vi</span>
+        <span><i style="background:#BFDFC9"></i>1–5 hành vi</span>
+        <span><i style="background:#6FC08D"></i>6–11 hành vi</span>
+        <span><i style="background:var(--green)"></i>Cả 12 hành vi</span>
       </div>
       <div class="stat-row">
         <div class="stat"><div class="n" id="st-days">0</div><div class="l">ngày đã thực hành</div></div>
@@ -385,12 +388,24 @@
 <script>
 /* ================= DATA ================= */
 const BEHAVIORS = [
-  {id:'b1', value:'TIÊN PHONG',  text:'Chủ động đề xuất giải pháp mới trước khi được yêu cầu'},
-  {id:'b2', value:'KẾT NỐI',     text:'Trao đổi kịp thời, thẳng thắn và rõ ràng'},
-  {id:'b3', value:'KẾT NỐI',     text:'Lắng nghe chủ động, tôn trọng góc nhìn khác biệt'},
-  {id:'b4', value:'CHÍNH TRỰC',  text:'Chủ động thông báo sự cố sớm nhất cho các bên liên quan'},
-  {id:'b5', value:'CAM KẾT',     text:'Cam kết với tiến trình và các mục tiêu nhỏ đã đề ra'}
+  {id:'b1',  value:'TIÊN PHONG', icon:'🚀', text:'Chủ động phát hiện vấn đề và đề xuất giải pháp trước khi được yêu cầu'},
+  {id:'b2',  value:'TIÊN PHONG', icon:'🚀', text:'Dám thử điều mới, không ngừng đổi mới sáng tạo và chia sẻ bài học để nhân rộng'},
+  {id:'b3',  value:'TIÊN PHONG', icon:'🚀', text:'Học hỏi nhanh, thích ứng tốt, hành động sớm'},
+  {id:'b4',  value:'KẾT NỐI',    icon:'🤝', text:'Trao đổi phản hồi kịp thời, thẳng thắn, rõ ràng và cởi mở'},
+  {id:'b5',  value:'KẾT NỐI',    icon:'🤝', text:'Lắng nghe chủ động, tôn trọng góc nhìn và sự khác biệt'},
+  {id:'b6',  value:'KẾT NỐI',    icon:'🤝', text:'Duy trì check-in định kỳ về công việc và cảm xúc để thông tin luôn thông suốt'},
+  {id:'b7',  value:'CHÍNH TRỰC', icon:'⚖️', text:'Nói được làm được, chủ động cập nhật thay đổi'},
+  {id:'b8',  value:'CHÍNH TRỰC', icon:'⚖️', text:'Thẳng thắn nhìn nhận vấn đề, không che giấu sai sót'},
+  {id:'b9',  value:'CHÍNH TRỰC', icon:'⚖️', text:'Nhận trách nhiệm và chủ động đưa ra phương án'},
+  {id:'b10', value:'CAM KẾT',    icon:'🎯', text:'Tuân thủ nội quy và chuẩn mực văn hóa doanh nghiệp trong mọi tình huống'},
+  {id:'b11', value:'CAM KẾT',    icon:'🎯', text:'Cam kết với tiến trình và các mục tiêu đã đề ra'},
+  {id:'b12', value:'CAM KẾT',    icon:'🎯', text:'Bám sát, tháo gỡ điểm nghẽn để đạt kết quả đã cam kết'}
 ];
+function groupBehaviors(){
+  const order=[], groups={};
+  BEHAVIORS.forEach(b=>{ if(!groups[b.value]){ groups[b.value]=[]; order.push(b.value); } groups[b.value].push(b); });
+  return order.map(v=>({value:v, icon:groups[v][0].icon, items:groups[v]}));
+}
 
 const FLASHCARDS = [
   {k:'Tư duy phát triển', t:'"Tôi CHƯA giỏi việc này" thay vì "Tôi không giỏi việc này"', p:'Sai không phải là thất bại – sai là dữ liệu để học. Góp ý không phải bị chê – mà là được tặng thông tin. Năng lực là thứ RÈN được.', q:'Tuần này, bạn đã đón nhận góp ý nào như một "món quà thông tin"?'},
@@ -475,7 +490,9 @@ async function loadCommunity(force){
 }
 function renderKudosForm(){
   const sel=document.getElementById('kd-behavior');
-  sel.innerHTML=BEHAVIORS.map(b=>`<option value="${b.text}">${b.value} – ${b.text}</option>`).join('');
+  sel.innerHTML=groupBehaviors().map(g=>
+    `<optgroup label="${g.icon} ${g.value}">${g.items.map(b=>`<option value="${b.text}">${b.text}</option>`).join('')}</optgroup>`
+  ).join('');
 }
 async function renderCommunity(){
   const c=await loadCommunity();
@@ -593,7 +610,10 @@ function fmtVN(d){ const days=['Chủ nhật','Thứ Hai','Thứ Ba','Thứ Tư'
 let obSel=null;
 function renderOnboarding(){
   const w=document.getElementById('ob-behaviors');
-  w.innerHTML=BEHAVIORS.map(b=>`<div class="choose-b" id="ob-${b.id}" onclick="obPick('${b.id}')"><span class="tag">${b.value}</span><br>${b.text}</div>`).join('');
+  w.innerHTML=groupBehaviors().map(g=>{
+    const items=g.items.map(b=>`<div class="choose-b" id="ob-${b.id}" onclick="obPick('${b.id}')">${b.text}</div>`).join('');
+    return `<div class="value-group"><div class="value-head">${g.icon} ${g.value}</div>${items}</div>`;
+  }).join('');
 }
 function obPick(id){
   obSel=id;
@@ -631,16 +651,19 @@ function renderToday(){
   const done=S.checkins[tk]||[];
   document.getElementById('today-date').textContent=fmtVN(new Date());
   const list=document.getElementById('behavior-list');
-  list.innerHTML=BEHAVIORS.map(b=>{
-    const isDone=done.includes(b.id);
-    const isFocus=S.profile&&S.profile.focus===b.id;
-    return `<div class="behavior ${isDone?'done':''} ${isFocus?'focus-b':''}" onclick="toggleBehavior('${b.id}')">
-      ${isFocus?'<span class="star">TRỌNG TÂM</span>':''}
-      <div class="check">${isDone?'✓':''}</div>
-      <div class="txt"><span class="tag">${b.value}</span><br>${b.text}</div>
-    </div>`;
+  list.innerHTML=groupBehaviors().map(g=>{
+    const items=g.items.map(b=>{
+      const isDone=done.includes(b.id);
+      const isFocus=S.profile&&S.profile.focus===b.id;
+      return `<div class="behavior ${isDone?'done':''} ${isFocus?'focus-b':''}" onclick="toggleBehavior('${b.id}')">
+        ${isFocus?'<span class="star">TRỌNG TÂM</span>':''}
+        <div class="check">${isDone?'✓':''}</div>
+        <div class="txt">${b.text}</div>
+      </div>`;
+    }).join('');
+    return `<div class="value-group"><div class="value-head">${g.icon} ${g.value}</div>${items}</div>`;
   }).join('');
-  document.getElementById('today-count').textContent=done.length+'/5 hành vi hôm nay';
+  document.getElementById('today-count').textContent=done.length+'/'+BEHAVIORS.length+' hành vi hôm nay';
   const focusDone=S.profile&&done.includes(S.profile.focus);
   document.getElementById('banner-done').style.display=focusDone?'block':'none';
   const dayN=Math.floor((Date.now()-new Date(S.profile?S.profile.startDate:todayKey()).getTime())/86400000);
@@ -677,7 +700,9 @@ function weekLabel(d){
 }
 function renderReflectForm(){
   const sel=document.getElementById('rf-behavior');
-  sel.innerHTML=BEHAVIORS.map(b=>`<option value="${b.id}" ${S.profile&&S.profile.focus===b.id?'selected':''}>${b.text}</option>`).join('');
+  sel.innerHTML=groupBehaviors().map(g=>
+    `<optgroup label="${g.icon} ${g.value}">${g.items.map(b=>`<option value="${b.id}" ${S.profile&&S.profile.focus===b.id?'selected':''}>${b.text}</option>`).join('')}</optgroup>`
+  ).join('');
 }
 function saveReflection(){
   const get=id=>document.getElementById(id).value.trim();
@@ -789,7 +814,7 @@ function renderProgress(){
     const d=new Date(start.getTime()+i*86400000); const k=todayKey(d);
     const n=(S.checkins[k]||[]).length;
     if(n>0){daysDone++; total+=n;}
-    let cls=''; if(n>=5)cls='l3'; else if(n>=3)cls='l2'; else if(n>=1)cls='l1';
+    let cls=''; if(n>=BEHAVIORS.length)cls='l3'; else if(n>=Math.ceil(BEHAVIORS.length/2))cls='l2'; else if(n>=1)cls='l1';
     if(k===tk)cls+=' today';
     html+=`<div class="cell ${cls}" title="${k}: ${n} hành vi">${i+1}</div>`;
   }
