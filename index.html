@@ -623,7 +623,6 @@ function toggleObGroup(value){
 function renderOnboarding(){
   const w=document.getElementById('ob-behaviors');
   const groups=groupBehaviors();
-  if(obOpenGroup===null) obOpenGroup=groups[0].value;
   w.innerHTML=groups.map(g=>{
     const isOpen=obOpenGroup===g.value;
     const pickedInGroup=g.items.some(b=>b.id===obSel);
@@ -680,10 +679,6 @@ function renderToday(){
   document.getElementById('today-date').textContent=fmtVN(new Date());
   const list=document.getElementById('behavior-list');
   const groups=groupBehaviors();
-  if(todayOpenGroup===null){
-    const focusGroup=S.profile&&groups.find(g=>g.items.some(b=>b.id===S.profile.focus));
-    todayOpenGroup=focusGroup?focusGroup.value:groups[0].value;
-  }
   list.innerHTML=groups.map(g=>{
     const doneInGroup=g.items.filter(b=>done.includes(b.id)).length;
     const isOpen=todayOpenGroup===g.value;
