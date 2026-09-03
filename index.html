@@ -41,9 +41,16 @@
   .behavior.done .check{background:var(--green);border-color:var(--green)}
   .behavior .txt{font-size:14.5px}
   .behavior .tag{display:inline-block;font-size:10.5px;font-weight:bold;letter-spacing:.3px;color:var(--blue);background:var(--blue-light);padding:2px 8px;border-radius:99px;margin-bottom:3px}
-  .value-group{margin-top:20px}
+  .value-group{margin-top:12px;border:1.5px solid var(--line);border-radius:12px;overflow:hidden}
   .value-group:first-child{margin-top:0}
-  .value-head{font-size:12.5px;font-weight:bold;letter-spacing:.4px;color:var(--navy);text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1.5px solid var(--line)}
+  .value-head{font-size:12.5px;font-weight:bold;letter-spacing:.4px;color:var(--navy);text-transform:uppercase;padding:12px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+  .value-head .vh-name{flex:1}
+  .value-head .vh-count{font-size:11px;font-weight:bold;color:var(--gray);background:var(--blue-light);padding:2px 8px;border-radius:99px;text-transform:none;letter-spacing:0}
+  .value-head .vh-chevron{font-size:11px;color:var(--gray);transition:transform .2s}
+  .value-group.open .value-head .vh-chevron{transform:rotate(180deg)}
+  .value-items{display:none;padding:0 12px 12px}
+  .value-group.open .value-items{display:block}
+  .value-items .behavior:first-child,.value-items .choose-b:first-child{margin-top:2px}
   .behavior.focus-b{position:relative}
   .behavior.focus-b .star{position:absolute;top:-8px;right:10px;background:var(--orange);color:#fff;font-size:10px;font-weight:bold;padding:2px 8px;border-radius:99px}
   .today-count{font-size:13.5px;color:var(--gray);text-align:center;margin-top:8px}
@@ -608,16 +615,32 @@ function fmtVN(d){ const days=['Chủ nhật','Thứ Hai','Thứ Ba','Thứ Tư'
 
 /* ================= ONBOARDING ================= */
 let obSel=null;
+let obOpenGroup=null;
+function toggleObGroup(value){
+  obOpenGroup=(obOpenGroup===value)?null:value;
+  renderOnboarding();
+}
 function renderOnboarding(){
   const w=document.getElementById('ob-behaviors');
-  w.innerHTML=groupBehaviors().map(g=>{
-    const items=g.items.map(b=>`<div class="choose-b" id="ob-${b.id}" onclick="obPick('${b.id}')">${b.text}</div>`).join('');
-    return `<div class="value-group"><div class="value-head">${g.icon} ${g.value}</div>${items}</div>`;
+  const groups=groupBehaviors();
+  if(obOpenGroup===null) obOpenGroup=groups[0].value;
+  w.innerHTML=groups.map(g=>{
+    const isOpen=obOpenGroup===g.value;
+    const pickedInGroup=g.items.some(b=>b.id===obSel);
+    const items=g.items.map(b=>`<div class="choose-b ${b.id===obSel?'sel':''}" id="ob-${b.id}" onclick="obPick('${b.id}')">${b.text}</div>`).join('');
+    return `<div class="value-group ${isOpen?'open':''}">
+      <div class="value-head" onclick="toggleObGroup('${g.value}')">
+        <span class="vh-name">${g.icon} ${g.value}</span>
+        ${pickedInGroup?'<span class="vh-count">✓ Đã chọn</span>':''}
+        <span class="vh-chevron">▾</span>
+      </div>
+      <div class="value-items">${items}</div>
+    </div>`;
   }).join('');
 }
 function obPick(id){
   obSel=id;
-  BEHAVIORS.forEach(b=>document.getElementById('ob-'+b.id).classList.toggle('sel', b.id===id));
+  renderOnboarding();
 }
 function finishOnboarding(){
   const name=document.getElementById('ob-name').value.trim();
@@ -646,12 +669,24 @@ function resetApp(){
 }
 
 /* ================= TODAY / CHECK-IN ================= */
+let todayOpenGroup=null;
+function toggleTodayGroup(value){
+  todayOpenGroup=(todayOpenGroup===value)?null:value;
+  renderToday();
+}
 function renderToday(){
   const tk=todayKey();
   const done=S.checkins[tk]||[];
   document.getElementById('today-date').textContent=fmtVN(new Date());
   const list=document.getElementById('behavior-list');
-  list.innerHTML=groupBehaviors().map(g=>{
+  const groups=groupBehaviors();
+  if(todayOpenGroup===null){
+    const focusGroup=S.profile&&groups.find(g=>g.items.some(b=>b.id===S.profile.focus));
+    todayOpenGroup=focusGroup?focusGroup.value:groups[0].value;
+  }
+  list.innerHTML=groups.map(g=>{
+    const doneInGroup=g.items.filter(b=>done.includes(b.id)).length;
+    const isOpen=todayOpenGroup===g.value;
     const items=g.items.map(b=>{
       const isDone=done.includes(b.id);
       const isFocus=S.profile&&S.profile.focus===b.id;
@@ -661,7 +696,14 @@ function renderToday(){
         <div class="txt">${b.text}</div>
       </div>`;
     }).join('');
-    return `<div class="value-group"><div class="value-head">${g.icon} ${g.value}</div>${items}</div>`;
+    return `<div class="value-group ${isOpen?'open':''}">
+      <div class="value-head" onclick="toggleTodayGroup('${g.value}')">
+        <span class="vh-name">${g.icon} ${g.value}</span>
+        <span class="vh-count">${doneInGroup}/${g.items.length}</span>
+        <span class="vh-chevron">▾</span>
+      </div>
+      <div class="value-items">${items}</div>
+    </div>`;
   }).join('');
   document.getElementById('today-count').textContent=done.length+'/'+BEHAVIORS.length+' hành vi hôm nay';
   const focusDone=S.profile&&done.includes(S.profile.focus);
