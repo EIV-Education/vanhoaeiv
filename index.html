@@ -237,8 +237,11 @@
   <!-- ===== PAGE: REFLECTION ===== -->
   <div class="page" id="page-reflect">
     <div class="card">
-      <h2>🪞 Soi chiếu tuần này</h2>
-      <p class="sub">10 phút trung thực với chính mình – theo đúng cấu trúc soi chiếu của EIV. Chia sẻ lên nhóm Lark sáng thứ Hai hàng tuần.</p>
+      <h2>🪞 Soi chiếu tuần</h2>
+      <p class="sub">10 phút trung thực với chính mình – theo đúng cấu trúc soi chiếu của EIV. Chia sẻ lên nhóm Lark sáng thứ Hai hàng tuần, soi chiếu lại cho tuần vừa kết thúc.</p>
+
+      <label class="q-label">0. Soi chiếu cho tuần nào?</label>
+      <select id="rf-week"></select>
 
       <label class="q-label">1. Hành vi tôi lựa chọn thực hành là:</label>
       <select id="rf-behavior"></select>
@@ -735,7 +738,19 @@ function weekLabel(d){
   const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day);
   return 'Tuần '+x.getDate()+'/'+(x.getMonth()+1)+' – '+(x.getDate()+6<=new Date(x.getFullYear(),x.getMonth()+1,0).getDate()?x.getDate()+6+'/'+(x.getMonth()+1):new Date(x.getTime()+6*86400000).getDate()+'/'+(new Date(x.getTime()+6*86400000).getMonth()+1));
 }
+// Tuần soi chiếu mặc định là tuần TRƯỚC (đã kết thúc), vì soi chiếu sáng
+// thứ Hai là nhìn lại tuần vừa qua, không phải tuần vừa mới bắt đầu.
+function renderReflectWeeks(){
+  const sel=document.getElementById('rf-week');
+  const opts=[];
+  for(let i=1;i<=8;i++) opts.push({offset:i, label:weekLabel(new Date(Date.now()-i*7*86400000))});
+  opts.push({offset:0, label:weekLabel(new Date())+' (tuần hiện tại, chưa kết thúc)'});
+  const prevSelected=sel.value;
+  sel.innerHTML=opts.map(o=>`<option value="${o.offset}">${o.label}</option>`).join('');
+  sel.value=opts.some(o=>String(o.offset)===prevSelected)?prevSelected:'1';
+}
 function renderReflectForm(){
+  renderReflectWeeks();
   const sel=document.getElementById('rf-behavior');
   sel.innerHTML=groupBehaviors().map(g=>
     `<optgroup label="${g.icon} ${g.value}">${g.items.map(b=>`<option value="${b.id}" ${S.profile&&S.profile.focus===b.id?'selected':''}>${b.text}</option>`).join('')}</optgroup>`
@@ -743,8 +758,10 @@ function renderReflectForm(){
 }
 function saveReflection(){
   const get=id=>document.getElementById(id).value.trim();
+  const weekOffset=Number(document.getElementById('rf-week').value)||0;
+  const weekText=weekLabel(new Date(Date.now()-weekOffset*7*86400000));
   const r={
-    id:Date.now(), date:todayKey(), week:weekLabel(new Date()),
+    id:Date.now(), date:todayKey(), week:weekText,
     behavior:document.getElementById('rf-behavior').value,
     good:get('rf-good'), challenge:get('rf-challenge'), lesson:get('rf-lesson'), next:get('rf-next')
   };
